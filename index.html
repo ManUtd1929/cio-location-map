@@ -6,7 +6,7 @@
 
     <title>CIO Logistics — Location</title>
 
-    <!-- Leaflet -->
+    <!-- Leaflet CSS -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -14,6 +14,7 @@
         crossorigin=""
     />
 
+    <!-- Leaflet JS -->
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -35,29 +36,36 @@
             height: 100%;
         }
 
+        /* CIO logo marker */
         .cio-marker {
-            width: 76px;
-            height: 76px;
+            width: 90px;
+            height: 48px;
 
             background: white;
-            border-radius: 16px;
+            border: 2px solid white;
+            border-radius: 10px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.30);
+            overflow: hidden;
 
-            border: 2px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.30);
         }
 
         .cio-marker img {
-            width: 66px;
-            max-height: 66px;
+            width: 82px !important;
+            height: 40px !important;
+
+            max-width: 82px !important;
+            max-height: 40px !important;
+
             object-fit: contain;
-            border-radius: 10px;
+            display: block;
         }
 
+        /* Bottom office card */
         .office-card {
             position: fixed;
 
@@ -115,6 +123,8 @@
 
         .popup-logo {
             width: 90px;
+            max-height: 55px;
+            object-fit: contain;
             margin-bottom: 8px;
         }
     </style>
@@ -167,9 +177,9 @@
                 >
             </div>
         `,
-        iconSize: [76, 76],
-        iconAnchor: [38, 76],
-        popupAnchor: [0, -76]
+        iconSize: [90, 48],
+        iconAnchor: [45, 48],
+        popupAnchor: [0, -52]
     });
 
     const marker = L.marker(
