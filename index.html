@@ -40,8 +40,7 @@
             height: 100%;
         }
 
-        /* CIO marker */
-
+        /* CIO logo marker */
         .cio-marker {
             width: 90px;
             height: 48px;
@@ -68,7 +67,6 @@
         }
 
         /* Popup */
-
         .leaflet-popup-content-wrapper {
             border-radius: 14px;
         }
@@ -81,6 +79,7 @@
         .popup-logo {
             width: 100px;
             max-height: 58px;
+
             object-fit: contain;
             margin-bottom: 8px;
         }
@@ -96,8 +95,7 @@
             line-height: 1.4;
         }
 
-        /* Bottom office card */
-
+        /* Bottom card */
         .office-card {
             position: fixed;
 
@@ -163,7 +161,6 @@
                 left: 10px;
                 right: 10px;
                 bottom: 12px;
-
                 padding: 14px;
             }
 
@@ -223,24 +220,49 @@
     */
 
     const map = L.map("map", {
-        zoomControl: true
+        zoomControl: true,
+
+        /* Увеличение колесом мыши */
+        scrollWheelZoom: true,
+
+        /* Двойной клик */
+        doubleClickZoom: true,
+
+        /* Увеличение двумя пальцами */
+        touchZoom: true,
+
+        /* Возможность двигать карту */
+        dragging: true,
+
+        /* Более плавные шаги увеличения */
+        zoomSnap: 0.5,
+        zoomDelta: 0.5,
+
+        minZoom: 3,
+        maxZoom: 21
     }).setView(
         [officeLatitude, officeLongitude],
-        18
+        17.5
     );
 
     /*
         OpenStreetMap tiles
-
-        detectRetina improves rendering
-        on high-density / Retina displays.
     */
 
     L.tileLayer(
         "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-            maxZoom: 19,
+            /*
+                OSM native tiles заканчиваются на 19,
+                но разрешаем приблизить до 21.
+            */
             maxNativeZoom: 19,
+            maxZoom: 21,
+
+            /*
+                Более четкое отображение
+                на Retina / HiDPI экранах.
+            */
             detectRetina: true,
 
             attribution:
