@@ -2,24 +2,21 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    >
 
     <title>CIO Logistics — Location</title>
 
-    <!-- Leaflet CSS -->
+    <!-- MapLibre -->
     <link
+        href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css"
         rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    />
+    >
 
-    <!-- Leaflet JS -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""
-    ></script>
+    <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
 
     <style>
         html,
@@ -28,74 +25,127 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            font-family: Arial, sans-serif;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            overflow: hidden;
         }
 
         #map {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
         }
 
-        /* CIO logo marker */
-        .cio-marker {
-            width: 90px;
-            height: 48px;
+        /* CIO marker */
 
-            background: white;
-            border: 2px solid white;
-            border-radius: 10px;
+        .cio-marker {
+            width: 92px;
+            height: 50px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            overflow: hidden;
+            background: white;
 
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.30);
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.30);
+
+            border: 2px solid white;
+
+            cursor: pointer;
+
+            overflow: hidden;
         }
 
         .cio-marker img {
-            width: 82px !important;
-            height: 40px !important;
-
-            max-width: 82px !important;
-            max-height: 40px !important;
+            width: 84px;
+            height: 42px;
 
             object-fit: contain;
+
             display: block;
         }
 
-        /* Bottom office card */
+        /* Popup */
+
+        .maplibregl-popup-content {
+            padding: 14px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.20);
+
+            text-align: center;
+
+            min-width: 190px;
+        }
+
+        .popup-logo {
+            width: 100px;
+            max-height: 60px;
+
+            object-fit: contain;
+
+            margin-bottom: 8px;
+        }
+
+        .popup-title {
+            font-size: 17px;
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+        .popup-address {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Bottom card */
+
         .office-card {
             position: fixed;
 
             left: 16px;
             right: 16px;
-            bottom: 30px;
+            bottom: 24px;
 
-            max-width: 480px;
+            max-width: 460px;
+
             margin: 0 auto;
-
-            background: white;
-
-            border-radius: 18px;
 
             padding: 16px;
 
             box-sizing: border-box;
 
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.96);
 
-            z-index: 1000;
+            border-radius: 18px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.25);
+
+            z-index: 10;
         }
 
         .office-card h3 {
-            margin: 0 0 8px;
+            margin: 0 0 7px;
+
             font-size: 20px;
         }
 
-        .office-card p {
+        .office-address {
             margin: 0 0 14px;
+
             font-size: 15px;
             line-height: 1.4;
         }
@@ -103,29 +153,62 @@
         .taxi-button {
             display: block;
 
-            text-align: center;
+            width: 100%;
+
+            box-sizing: border-box;
 
             padding: 14px;
 
             border-radius: 12px;
 
+            text-align: center;
+
             background: #ffcc00;
             color: #000;
 
             text-decoration: none;
+
             font-weight: bold;
             font-size: 16px;
         }
 
-        .leaflet-popup-content {
-            text-align: center;
+        .taxi-button:active {
+            transform: scale(0.98);
         }
 
-        .popup-logo {
-            width: 90px;
-            max-height: 55px;
-            object-fit: contain;
-            margin-bottom: 8px;
+        /* Mobile */
+
+        @media (max-width: 600px) {
+            .office-card {
+                left: 10px;
+                right: 10px;
+                bottom: 12px;
+
+                padding: 14px;
+            }
+
+            .office-card h3 {
+                font-size: 18px;
+            }
+
+            .office-address {
+                font-size: 14px;
+            }
+
+            .taxi-button {
+                padding: 13px;
+                font-size: 15px;
+            }
+
+            .cio-marker {
+                width: 82px;
+                height: 46px;
+            }
+
+            .cio-marker img {
+                width: 74px;
+                height: 38px;
+            }
         }
     </style>
 </head>
@@ -135,9 +218,10 @@
 <div id="map"></div>
 
 <div class="office-card">
+
     <h3>CIO Logistics</h3>
 
-    <p>
+    <p class="office-address">
         📍 Наири Зарьяна 22А, Ереван
     </p>
 
@@ -147,65 +231,119 @@
     >
         🚕 Вызвать Яндекс Go
     </a>
+
 </div>
 
 <script>
-    const officeLatitude = 40.204062;
-    const officeLongitude = 44.509160;
 
-    const map = L.map("map").setView(
-        [officeLatitude, officeLongitude],
-        17
+    const officeLongitude = 44.509160;
+    const officeLatitude = 40.204062;
+
+    /*
+        MAP
+    */
+
+    const map = new maplibregl.Map({
+
+        container: "map",
+
+        style:
+            "https://tiles.openfreemap.org/styles/liberty",
+
+        center: [
+            officeLongitude,
+            officeLatitude
+        ],
+
+        zoom: 16.5,
+
+        pitch: 0,
+
+        attributionControl: true
+
+    });
+
+    /*
+        Zoom controls
+    */
+
+    map.addControl(
+        new maplibregl.NavigationControl({
+            showCompass: false
+        }),
+        "top-right"
     );
 
-    L.tileLayer(
-        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-            maxZoom: 19,
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }
-    ).addTo(map);
+    /*
+        CIO logo marker
+    */
 
-    const cioIcon = L.divIcon({
-        className: "",
-        html: `
-            <div class="cio-marker">
+    const markerElement =
+        document.createElement("div");
+
+    markerElement.className =
+        "cio-marker";
+
+    const logo =
+        document.createElement("img");
+
+    logo.src =
+        "photo_5222207223352730433_y.jpg";
+
+    logo.alt =
+        "CIO Logistics";
+
+    markerElement.appendChild(
+        logo
+    );
+
+    /*
+        Popup
+    */
+
+    const popup =
+        new maplibregl.Popup({
+            offset: 28,
+            closeButton: true
+        })
+        .setHTML(`
+            <div>
+
                 <img
+                    class="popup-logo"
                     src="photo_5222207223352730433_y.jpg"
                     alt="CIO Logistics"
                 >
+
+                <div class="popup-title">
+                    CIO Logistics
+                </div>
+
+                <div class="popup-address">
+                    📍 Наири Зарьяна 22А, Ереван
+                </div>
+
             </div>
-        `,
-        iconSize: [90, 48],
-        iconAnchor: [45, 48],
-        popupAnchor: [0, -52]
-    });
+        `);
 
-    const marker = L.marker(
-        [officeLatitude, officeLongitude],
-        {
-            icon: cioIcon
-        }
-    ).addTo(map);
+    /*
+        Marker
+    */
 
-    marker.bindPopup(`
-        <div>
-            <img
-                class="popup-logo"
-                src="photo_5222207223352730433_y.jpg"
-                alt="CIO Logistics"
-            >
+    new maplibregl.Marker({
+        element: markerElement,
+        anchor: "bottom"
+    })
 
-            <br>
+        .setLngLat([
+            officeLongitude,
+            officeLatitude
+        ])
 
-            <strong>CIO Logistics</strong>
+        .setPopup(popup)
 
-            <br><br>
+        .addTo(map);
 
-            📍 Наири Зарьяна 22А, Ереван
-        </div>
-    `);
 </script>
 
 </body>
